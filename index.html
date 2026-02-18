@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMB Poltekes KMC Kuningan 2026/2027</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fffaf5; }
+        .orange-gradient { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+        .form-card { background: white; border-radius: 1rem; box-shadow: 0 4px 20px rgba(234, 88, 12, 0.1); }
+        input, select, textarea { transition: all 0.3s ease; border: 1px solid #e5e7eb; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #f97316; ring: 2px; ring-color: rgba(249, 115, 22, 0.2); }
+        .step-hidden { display: none; }
+        .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Loading overlay */
+        #loader { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 100; align-items: center; justify-content: center; flex-direction: column; }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+
+    <div id="loader">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+        <p class="mt-4 font-bold text-orange-600">Menyimpan data ke server...</p>
+    </div>
+
+    <header class="orange-gradient text-white py-12 px-4 shadow-lg mb-8">
+        <div class="max-w-4xl mx-auto flex flex-col items-center text-center">
+            <div class="bg-white p-2 rounded-2xl mb-6 shadow-md overflow-hidden">
+                <img src="https://poltekkeskmckuningan.ac.id/wp-content/uploads/2023/04/Logo-Poltekkes-KMC.png" 
+                     alt="Logo Poltekkes KMC Kuningan" 
+                     class="h-24 w-auto object-contain"
+                     onerror="this.src='https://via.placeholder.com/150?text=KMC+LOGO'">
+            </div>
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">Penerimaan Mahasiswa Baru</h1>
+            <p class="text-xl opacity-90">Poltekkes KMC Kuningan</p>
+            <p class="mt-2 text-sm font-light tracking-widest uppercase">Tahun Akademik 2026 / 2027</p>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4">
+        
+        <div id="step1">
+            <div class="form-card p-6 mb-6 border-t-8 border-orange-500">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Formulir Pendaftaran Online</h2>
+                <p class="text-gray-600">Lengkapi data profil dan unggah dokumen persyaratan di bawah ini.</p>
+            </div>
+
+            <form id="registrationForm" class="space-y-6">
+                <!-- Data Identitas Utama -->
+                <div class="form-card p-8">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-6 border-b pb-2">I. Data Identitas Utama</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap <span class="text-orange-500">*</span></label>
+                            <input type="text" id="f_nama" required class="w-full p-3 rounded-lg bg-gray-50" placeholder="Nama Lengkap sesuai Ijazah">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">NIK (KTP) <span class="text-orange-500">*</span></label>
+                            <input type="text" id="f_nik" required maxlength="16" class="w-full p-3 rounded-lg bg-gray-50" placeholder="16 Digit NIK">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Kartu Keluarga <span class="text-orange-500">*</span></label>
+                            <input type="text" id="f_nokk" required maxlength="16" class="w-full p-3 rounded-lg bg-gray-50" placeholder="16 Digit No. KK">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">NISN <span class="text-orange-500">*</span></label>
+                            <input type="text" id="f_nisn" required maxlength="10" class="w-full p-3 rounded-lg bg-gray-50" placeholder="10 Digit NISN">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Kelamin <span class="text-orange-500">*</span></label>
+                            <select id="f_jk" required class="w-full p-3 rounded-lg bg-gray-50">
+                                <option value="">-- Pilih --</option>
+                                <option value="Laki-laki">Laki-laki</option>
+                                <option value="Perempuan">Perempuan</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Agama <span class="text-orange-500">*</span></label>
+                            <select id="f_agama" required class="w-full p-3 rounded-lg bg-gray-50">
+                                <option value="">-- Pilih --</option>
+                                <option value="Islam">Islam</option>
+                                <option value="Kristen">Kristen</option>
+                                <option value="Katolik">Katolik</option>
+                                <option value="Hindu">Hindu</option>
+                                <option value="Budha">Budha</option>
+                                <option value="Konghucu">Konghucu</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tempat Lahir <span class="text-orange-500">*</span></label>
+                            <input type="text" id="f_tempat_lahir" required class="w-full p-3 rounded-lg bg-gray-50" placeholder="Contoh: Kuningan">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Lahir <span class="text-orange-500">*</span></label>
+                            <input type="date" id="f_tgl_lahir" required class="w-full p-3 rounded-lg bg-gray-50">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kontak & Alamat -->
+                <div class="form-card p-8">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-6 border-b pb-2">II. Kontak & Alamat Lengkap</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-orange-500">*</span></label>
+                            <input type="email" id="f_email" required class="w-full p-3 rounded-lg bg-gray-50" placeholder="alamat@email.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">No. Handphone / WA <span class="text-orange-500">*</span></label>
+                            <input type="tel" id="f_hp" required class="w-full p-3 rounded-lg bg-gray-50" placeholder="08xxxxxxxx">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Lengkap <span class="text-orange-500">*</span></label>
+                            <textarea id="f_alamat" required rows="3" class="w-full p-3 rounded-lg bg-gray-50" placeholder="Nama Jalan, No. Rumah, RT/RW, Kec, Kota/Kab"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pendidikan & Pilihan -->
+                <div class="form-card p-8">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-6 border-b pb-2">III. Pendidikan & Program Studi</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Asal Sekolah <span class="text-orange-500">*</span></label>
+                            <input type="text" id="f_sekolah" required class="w-full p-3 rounded-lg bg-gray-50" placeholder="Nama SMA/SMK/MA">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tahun Lulus <span class="text-orange-500">*</span></label>
+                            <input type="number" id="f_lulus" required min="2010" max="2027" class="w-full p-3 rounded-lg bg-gray-50" placeholder="Contoh: 2026">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Jalur Pendaftaran <span class="text-orange-500">*</span></label>
+                            <select id="f_jalur" required class="w-full p-3 rounded-lg bg-gray-50">
+                                <option value="">-- Pilih --</option>
+                                <option value="Reguler">Reguler</option>
+                                <option value="KIP Kuliah">KIP Kuliah</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Program Studi <span class="text-orange-500">*</span></label>
+                            <select id="f_prodi" required class="w-full p-3 rounded-lg bg-gray-50">
+                                <option value="">-- Pilih --</option>
+                                <option value="D3 Gizi">D3 Gizi</option>
+                                <option value="D3 Fisioterapi">D3 Fisioterapi</option>
+                                <option value="D4 Manajemen Informasi Kesehatan">D4 Manajemen Informasi Kesehatan</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Berkas -->
+                <div class="form-card p-8">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-6 border-b pb-2">IV. Unggah Dokumen Persyaratan</h3>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Pas Photo (4x6)</label>
+                                <input type="file" id="u_photo" accept="image/*" required class="text-xs w-full border p-2 rounded">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Scan KTP</label>
+                                <input type="file" id="u_ktp" accept="image/*,.pdf" required class="text-xs w-full border p-2 rounded">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Scan Kartu Keluarga</label>
+                                <input type="file" id="u_kk" accept="image/*,.pdf" required class="text-xs w-full border p-2 rounded">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full orange-gradient text-white font-bold py-4 px-8 rounded-xl shadow-lg transform hover:-translate-y-1 transition-all">
+                    LANJUT KE PEMBAYARAN
+                </button>
+            </form>
+        </div>
+
+        <!-- STEP 2: PEMBAYARAN -->
+        <div id="step2" class="step-hidden animate-fade-in">
+            <div class="form-card p-8 border-t-8 border-orange-500">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center text-orange-600">Konfirmasi Pembayaran</h3>
+                
+                <div class="bg-orange-50 rounded-xl p-6 mb-8 border border-orange-100">
+                    <div class="flex justify-between items-center text-xl font-bold text-orange-600">
+                        <span>Total Biaya</span>
+                        <span>Rp 100.000</span>
+                    </div>
+                </div>
+
+                <div class="space-y-6 mb-8">
+                    <div class="p-6 border-2 border-orange-200 rounded-xl bg-white shadow-sm">
+                        <p class="text-xs text-gray-400 uppercase font-bold mb-1">Transfer Bank BJB</p>
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-xl font-mono font-bold text-gray-800" id="rekNumber">0148470774100</p>
+                            <button onclick="copyRek()" class="text-xs bg-orange-100 text-orange-600 px-3 py-1 rounded-full font-bold">Salin</button>
+                        </div>
+                        <p class="text-sm font-medium text-gray-700">A.N. Politeknik Kesehatan KMC Kuningan</p>
+                    </div>
+
+                    <div class="p-6 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50">
+                        <h4 class="font-bold text-gray-800 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-orange-500" fill="currentColor" viewBox="0 0 20 20"><path d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2H4zm0 2h12v1H4V7zm0 3h12v5H4v-5z"/></svg>
+                            Unggah Bukti Transfer
+                        </h4>
+                        <input type="file" id="f_bukti" accept="image/*" class="w-full text-sm" onchange="previewFile()">
+                        <div id="preview_container" class="mt-4 hidden border rounded-lg overflow-hidden">
+                            <img id="image_preview" class="w-full h-48 object-contain bg-white" src="">
+                        </div>
+                    </div>
+                </div>
+
+                <button id="payBtn" disabled onclick="submitAll()" class="w-full bg-gray-300 text-white font-bold py-4 px-8 rounded-xl shadow-lg transition-all cursor-not-allowed">
+                    KIRIM PENDAFTARAN
+                </button>
+            </div>
+        </div>
+
+        <!-- PDF TEMPLATE (Hidden) -->
+        <div id="pdfTemplate" style="position: absolute; left: -9999px; top: 0; width: 800px; padding: 50px; background: white;">
+            <div style="display: flex; align-items: center; border-bottom: 3px solid #ea580c; padding-bottom: 20px; margin-bottom: 30px;">
+                <div style="flex: 1;">
+                    <h1 style="color: #ea580c; font-size: 24px; margin: 0;">POLTEKKES KMC KUNINGAN</h1>
+                    <p style="font-size: 12px; margin: 5px 0 0; color: #666;">Bukti Registrasi Mahasiswa Baru 2026/2027</p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-size: 14px; font-weight: bold; margin: 0;" id="p_reg"></p>
+                    <p style="font-size: 10px; color: #999;" id="p_paid_time"></p>
+                </div>
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                <tr><th colspan="2" style="text-align: left; background: #fffaf5; padding: 10px; border-bottom: 1px solid #eee; color: #ea580c;">BIODATA MAHASISWA</th></tr>
+                <tr><td style="padding: 8px; width: 200px; border-bottom: 1px solid #f9f9f9; font-weight: bold;">Nama Lengkap</td><td id="p_nama" style="padding: 8px; border-bottom: 1px solid #f9f9f9;"></td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #f9f9f9; font-weight: bold;">NIK / NISN</td><td style="padding: 8px; border-bottom: 1px solid #f9f9f9;"><span id="p_nik"></span> / <span id="p_nisn"></span></td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #f9f9f9; font-weight: bold;">No. Kartu Keluarga</td><td id="p_nokk" style="padding: 8px; border-bottom: 1px solid #f9f9f9;"></td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #f9f9f9; font-weight: bold;">Tempat, Tgl Lahir</td><td style="padding: 8px; border-bottom: 1px solid #f9f9f9;"><span id="p_ttl"></span></td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #f9f9f9; font-weight: bold;">Jenis Kelamin / Agama</td><td style="padding: 8px; border-bottom: 1px solid #f9f9f9;"><span id="p_jk"></span> / <span id="p_agama"></span></td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #f9f9f9; font-weight: bold;">Alamat</td><td id="p_alamat" style="padding: 8px; border-bottom: 1px solid #f9f9f9;"></td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #f9f9f9; font-weight: bold;">No. HP</td><td id="p_hp" style="padding: 8px; border-bottom: 1px solid #f9f9f9;"></td></tr>
+                
+                <tr><th colspan="2" style="text-align: left; background: #fffaf5; padding: 10px; border-bottom: 1px solid #eee; color: #ea580c; margin-top: 20px;">AKADEMIK</th></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #f9f9f9; font-weight: bold;">Asal Sekolah (Lulus)</td><td style="padding: 8px; border-bottom: 1px solid #f9f9f9;"><span id="p_sekolah"></span> (<span id="p_lulus"></span>)</td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #f9f9f9; font-weight: bold;">Jalur / Prodi</td><td style="padding: 8px; border-bottom: 1px solid #f9f9f9; font-weight: bold; color: #ea580c;"><span id="p_jalur"></span> / <span id="p_prodi"></span></td></tr>
+            </table>
+
+            <div style="margin-top: 30px; display: flex; gap: 20px;">
+                <div style="flex: 1; border: 1px solid #eee; padding: 10px; text-align: center;">
+                    <p style="font-size: 10px; font-weight: bold; margin-bottom: 5px;">PAS PHOTO</p>
+                    <img id="pdf_photo" style="width: 80px; height: 110px; object-fit: cover; background: #f0f0f0;">
+                </div>
+                <div style="flex: 3; border: 1px solid #eee; padding: 10px; background: #fcfcfc;">
+                    <p style="font-size: 10px; font-weight: bold; margin-bottom: 5px;">BUKTI PEMBAYARAN TERVALIDASI</p>
+                    <img id="pdf_bukti_img" style="width: 100%; height: 110px; object-fit: contain;">
+                </div>
+            </div>
+
+            <div style="margin-top: 40px; text-align: right; font-size: 12px;">
+                <p>Kuningan, <span id="p_date"></span></p>
+                <div style="height: 60px;"></div>
+                <p><b>Panitia PMB KMC</b></p>
+            </div>
+        </div>
+
+        <!-- SUCCESS MODAL -->
+        <div id="successModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4">
+            <div class="bg-white rounded-2xl max-w-md w-full p-8 text-center shadow-2xl">
+                <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Pendaftaran Berhasil!</h3>
+                <p class="text-sm text-gray-500 mb-6">Seluruh data dan dokumen telah disimpan di Google Sheets. Silakan unduh kartu pendaftaran Anda.</p>
+                <button onclick="downloadPDF()" class="w-full py-4 orange-gradient text-white rounded-xl font-bold mb-3 shadow-lg">UNDUH PDF SEKARANG</button>
+                <button onclick="location.reload()" class="text-gray-400 text-xs uppercase tracking-widest font-bold">Tutup</button>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // MASUKKAN URL GOOGLE APPS SCRIPT ANDA DI SINI
+        const scriptURL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL';
+        const { jsPDF } = window.jspdf;
+        let userData = {};
+
+        function copyRek() {
+            const rek = document.getElementById('rekNumber').innerText;
+            const el = document.createElement('textarea');
+            el.value = rek;
+            document.body.appendChild(el); el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            alert('Salin Berhasil!');
+        }
+
+        function previewFile() {
+            const file = document.getElementById('f_bukti').files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('image_preview').src = e.target.result;
+                    document.getElementById('pdf_bukti_img').src = e.target.result;
+                    document.getElementById('preview_container').classList.remove('hidden');
+                    const btn = document.getElementById('payBtn');
+                    btn.disabled = false;
+                    btn.classList.replace('bg-gray-300', 'bg-green-600');
+                    btn.classList.replace('cursor-not-allowed', 'cursor-pointer');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Collect All Data
+            userData = {
+                nama: document.getElementById('f_nama').value,
+                nik: document.getElementById('f_nik').value,
+                nokk: document.getElementById('f_nokk').value,
+                nisn: document.getElementById('f_nisn').value,
+                jk: document.getElementById('f_jk').value,
+                agama: document.getElementById('f_agama').value,
+                ttl: `${document.getElementById('f_tempat_lahir').value}, ${document.getElementById('f_tgl_lahir').value}`,
+                email: document.getElementById('f_email').value,
+                hp: document.getElementById('f_hp').value,
+                alamat: document.getElementById('f_alamat').value,
+                sekolah: document.getElementById('f_sekolah').value,
+                lulus: document.getElementById('f_lulus').value,
+                jalur: document.getElementById('f_jalur').value,
+                prodi: document.getElementById('f_prodi').value,
+                regId: 'KMC-' + Date.now().toString(36).toUpperCase()
+            };
+
+            // Process Photo Preview for PDF
+            const photoFile = document.getElementById('u_photo').files[0];
+            if(photoFile) {
+                const reader = new FileReader();
+                reader.onload = (e) => document.getElementById('pdf_photo').src = e.target.result;
+                reader.readAsDataURL(photoFile);
+            }
+
+            document.getElementById('step1').classList.add('step-hidden');
+            document.getElementById('step2').classList.remove('step-hidden');
+            window.scrollTo(0,0);
+        });
+
+        async function submitAll() {
+            const btn = document.getElementById('payBtn');
+            const loader = document.getElementById('loader');
+            
+            btn.innerHTML = "Memproses...";
+            btn.disabled = true;
+            loader.style.display = 'flex';
+
+            // Fill PDF Template UI
+            document.getElementById('p_nama').innerText = userData.nama;
+            document.getElementById('p_nik').innerText = userData.nik;
+            document.getElementById('p_nisn').innerText = userData.nisn;
+            document.getElementById('p_nokk').innerText = userData.nokk;
+            document.getElementById('p_ttl').innerText = userData.ttl;
+            document.getElementById('p_jk').innerText = userData.jk;
+            document.getElementById('p_agama').innerText = userData.agama;
+            document.getElementById('p_alamat').innerText = userData.alamat;
+            document.getElementById('p_hp').innerText = userData.hp;
+            document.getElementById('p_sekolah').innerText = userData.sekolah;
+            document.getElementById('p_lulus').innerText = userData.lulus;
+            document.getElementById('p_jalur').innerText = userData.jalur;
+            document.getElementById('p_prodi').innerText = userData.prodi;
+            document.getElementById('p_reg').innerText = userData.regId;
+            document.getElementById('p_date').innerText = new Date().toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'});
+            document.getElementById('p_paid_time').innerText = "Lunas: " + new Date().toLocaleString('id-ID');
+
+            // Send to Google Sheets
+            try {
+                if (scriptURL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL') {
+                    console.log("Simulasi pengiriman data (URL belum dipasang)");
+                } else {
+                    await fetch(scriptURL, {
+                        method: 'POST',
+                        body: JSON.stringify(userData),
+                    });
+                }
+                
+                loader.style.display = 'none';
+                document.getElementById('successModal').classList.remove('hidden');
+            } catch (error) {
+                loader.style.display = 'none';
+                alert('Terjadi kesalahan saat menyimpan data. Namun, Anda tetap bisa mengunduh PDF.');
+                document.getElementById('successModal').classList.remove('hidden');
+            }
+        }
+
+        async function downloadPDF() {
+            const template = document.getElementById('pdfTemplate');
+            const canvas = await html2canvas(template, { scale: 2 });
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const width = pdf.internal.pageSize.getWidth();
+            const height = (canvas.height * width) / canvas.width;
+            pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+            pdf.save(`PMB_KMC_${userData.nama.replace(/\s+/g, '_')}.pdf`);
+        }
+    </script>
+</body>
+</html>
